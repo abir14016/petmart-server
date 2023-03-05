@@ -16,7 +16,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        const sampleCollection = client.db("petmart").collection("sampleCollection");
+        const sampleCollection = client.db('petmart').collection('sampleCollection');
+        const postCollection = client.db('petmart').collection('postCollection');
 
         //load sample collection
         app.get('/sample', async (req, res) => {
@@ -24,6 +25,14 @@ async function run() {
             const cursor = sampleCollection.find(query);
             const samples = await cursor.toArray();
             res.send(samples);
+        });
+
+        //load all posts
+        app.get('/post', async (req, res) => {
+            const query = {};
+            const cursor = postCollection.find(query);
+            const posts = await cursor.toArray();
+            res.send(posts);
         });
     }
     finally {
@@ -33,7 +42,7 @@ async function run() {
 
 run().catch(console.dir);
 
-
+//root api
 app.get('/', (req, res) => {
     res.send('Hello from petMart!');
 });
