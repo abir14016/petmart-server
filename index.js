@@ -47,18 +47,41 @@ async function run() {
         });
 
         //put user to database
+        // app.put('/user/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     const user = req.body;
+        //     const filter = { email: email };
+        //     const options = { upsert: true };
+        //     const updateDoc = {
+        //         $set: user,
+        //     };
+        //     const result = await userCollection.updateOne(filter, updateDoc, options);
+        //     const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10d" });
+        //     res.send({ result, token });
+        // });
+
+
+        //upsert single user
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
             const filter = { email: email };
             const options = { upsert: true };
-            const updateDoc = {
+            const updatedDoc = {
                 $set: user,
             };
-            const result = await userCollection.updateOne(filter, updateDoc, options);
-            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10d" });
-            res.send({ result, token });
+            const result = await userCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
         });
+
+        //load single user by email
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            res.send(user);
+        });
+
     }
     finally {
 
