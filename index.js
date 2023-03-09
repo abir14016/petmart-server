@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -41,27 +41,44 @@ async function run() {
         });
 
 
+        //create post api
         app.post('/post', async (req, res) => {
             const post = req.body;
             const result = await postCollection.insertOne(post);
             res.send(result);
         });
 
-        //upsert single post plant by id
+        //upsert single post by id
         app.put('/post/:id', async (req, res) => {
             const id = req.params.id;
-            const post = req.body;
-            const filter = { _id: ObjectId(id) };
+            const editedPost = req.body;
+            const filter = { _id: new ObjectId(id) };
             const options = { upsert: true };
             const updatedDoc = {
-                $set: post,
+                $set: editedPost
             };
             const result = await postCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
         });
 
+        //load single post by id
+        app.get('/post/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const post = await postCollection.findOne(query);
+            res.send(post);
+        });
+
 
         //post api----------------------------------------------------------------
+
+
+        //comment api----------------------------------------------------------------
+
+
+
+
+        //comment api----------------------------------------------------------------
 
 
         //user api----------------------------------------------------------------
