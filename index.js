@@ -29,6 +29,9 @@ async function run() {
             res.send(samples);
         });
 
+        //post api----------------------------------------------------------------
+
+
         //load all posts
         app.get('/post', async (req, res) => {
             const query = {};
@@ -36,6 +39,32 @@ async function run() {
             const posts = await cursor.toArray();
             res.send(posts);
         });
+
+
+        app.post('/post', async (req, res) => {
+            const post = req.body;
+            const result = await postCollection.insertOne(post);
+            res.send(result);
+        });
+
+        //upsert single post plant by id
+        app.put('/post/:id', async (req, res) => {
+            const id = req.params.id;
+            const post = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: post,
+            };
+            const result = await postCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+
+        //post api----------------------------------------------------------------
+
+
+        //user api----------------------------------------------------------------
 
 
         //load all users
@@ -81,6 +110,8 @@ async function run() {
             const user = await userCollection.findOne(query);
             res.send(user);
         });
+
+        //user api----------------------------------------------------------------
 
     }
     finally {
