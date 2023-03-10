@@ -61,6 +61,7 @@ async function run() {
             res.send(result);
         });
 
+
         //load single post by id
         app.get('/post/:id', async (req, res) => {
             const id = req.params.id;
@@ -129,6 +130,37 @@ async function run() {
         });
 
         //user api----------------------------------------------------------------
+
+
+        //admin api-------------------------------- 
+        //check admin api
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email });
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin });
+        });
+
+        //make admin api
+        app.put('/user/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: { role: 'admin' },
+            };
+            const result = await userCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        //remove a single user api
+        app.delete('/user/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await userCollection.deleteOne(query);
+            res.send(result);
+        });
+        //admin api--------------------------------  
 
     }
     finally {
